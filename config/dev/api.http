@@ -1,7 +1,7 @@
 # Roles - for write operation
 # kuriakosej
  # UserAdmin - can create users and assign roles
- # Trader - can assigned Bonds
+ # Trader - can request Bonds assignment
 # astala
  # CompanyAdmin - can create Terms
 # simpsonh

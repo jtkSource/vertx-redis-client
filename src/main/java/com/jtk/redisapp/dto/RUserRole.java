@@ -7,8 +7,6 @@ import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 import io.vertx.redis.client.Command;
 import io.vertx.redis.client.Request;
-import io.vertx.redis.client.Response;
-import io.vertx.redis.client.impl.types.NumberType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
