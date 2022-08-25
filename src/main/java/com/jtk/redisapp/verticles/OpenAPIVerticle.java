@@ -1,6 +1,5 @@
 package com.jtk.redisapp.verticles;
 
-import com.jtk.redisapp.client.MainVerticle;
 import com.jtk.redisapp.verticles.handler.HandlerFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;

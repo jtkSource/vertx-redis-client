@@ -1,8 +1,8 @@
-package com.jtk.redisapp.client;
+package com.jtk.redisapp.verticles;
 
 
 import com.google.common.collect.ImmutableList;
-import com.jtk.redisapp.verticles.OpenAPIVerticle;
+import com.jtk.redisapp.client.VRedisClient;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
