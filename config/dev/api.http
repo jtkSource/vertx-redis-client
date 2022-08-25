@@ -67,6 +67,11 @@ GET http://localhost:9096/api/bonds/assigned/simpsonh
 GET http://localhost:9096/api/bonds/assigned/kuriakosej
 
 ###
+GET http://localhost:9096/api/bonds/details/test02-4
+###
+GET http://localhost:9096/api/bonds/details/test02-3
+
+###
 GET http://localhost:9096/api/terms/test01
 
 ###

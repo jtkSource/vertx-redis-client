@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jtk.redisapp.client.VRedisClient;
-import com.jtk.redisapp.dto.BondAssignment;
-import com.jtk.redisapp.dto.BondTerm;
-import com.jtk.redisapp.dto.RUser;
-import com.jtk.redisapp.dto.RUserRole;
+import com.jtk.redisapp.dto.*;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
@@ -161,7 +158,7 @@ public class HandlerFactory {
                 });
 
         routerBuilder
-                .operation("get-user-bonds")
+                .operation("get-bonds-on-user")
                         .handler(routingContext -> {
                             RequestParameters params = routingContext.get("parsedParameters");
                             String userName = params.pathParameter("userId").getString();
@@ -175,6 +172,26 @@ public class HandlerFactory {
                                         }
                                     });
                         });
+        routerBuilder
+                .operation("get-bond-details")
+                .handler(routingContext -> {
+                    RequestParameters params = routingContext.get("parsedParameters");
+                    String bondId = params.pathParameter("bondId").getString();
+                    BondDetails.Cache.getBondsDetails(bondId)
+                            .onComplete(event -> {
+                                if (event.succeeded()){
+                                    BondDetails details = event.result();
+                                    try {
+                                        handleResponse(routingContext, jsonMapper.writeValueAsString(details));
+                                    } catch (JsonProcessingException e) {
+                                        handleExceptionResponse(routingContext, e);
+                                    }
+                                }else {
+                                    handleExceptionResponse(routingContext, event.cause());
+                                }
+                            });
+                });
+
 
         buildUserManagementAPI(routerBuilder);
 

@@ -142,7 +142,7 @@ public class BondAssignment {
                             conn.send(Request.cmd(Command.MULTI),
                                             event -> {
                                                 if (event.succeeded() && event.result().toString().equals("OK")) {
-                                                    log.info("Issuing multiple commands in a transaction");
+                                                    log.info("Issuing multiple commands in a transaction...");
                                                 }
                                             })
                                     .send(Request.cmd(Command.HINCRBY, bondTermKey, "unitsAvailable", -unitsAssigned),
@@ -198,9 +198,9 @@ public class BondAssignment {
                                             }
                                             promise.complete(true);
 
-                                            log.info("completed transaction...");
+                                            log.info("Completed Transaction...");
                                         } else {
-                                            log.error("transaction failed ", event.cause());
+                                            log.error("Transaction failed!!", event.cause());
                                         }
                                     });
 

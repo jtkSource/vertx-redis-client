@@ -85,7 +85,7 @@ paths:
   /api/bonds/assigned/{userId}:
     get:
       summary: Get bonds assigned to UserId
-      operationId: get-user-bonds
+      operationId: get-bonds-on-user
       tags:
         - corda
         - bond-term
@@ -113,6 +113,42 @@ paths:
                 $ref: '#/components/schemas/exceptionMessage'
 
         # Users API
+  /api/bonds/details/{bondId}:
+    get:
+      summary: Get details on the bond
+      operationId: get-bond-details
+      tags:
+        - corda
+        - bond-term
+      parameters:
+        - name: bondId
+          in: path
+          required: true
+          description: bondId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bond Details issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unitsAssigned:
+                    type: integer
+                  nextCouponDate:
+                    type: string
+                  maturityDate:
+                    type: string
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+
+  # Users API
   /api/users:
     post:
       summary: Create Users on the cache
