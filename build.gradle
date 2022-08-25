@@ -1,0 +1,75 @@
+buildscript {
+    Properties constants = new Properties()
+    file("$projectDir/constants.properties").withInputStream { constants.load(it) }
+    ext {
+        junit_version = constants.getProperty("junitVersion")
+        log4j_version = constants.getProperty("log4jVersion")
+        slf4j_version = constants.getProperty("slf4jVersion")
+        guava_version = constants.getProperty("guavaVersion")
+        // webserver dependencies
+        vertx_version = "4.3.2"
+        junit_jupiter_version = "5.7.0"
+        main_class_name = "com.jtk.redisapp.client.MainVerticle"
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+        maven { url "https://plugins.gradle.org/m2/" }
+
+    }
+
+    dependencies {
+        classpath "gradle.plugin.io.vertx:vertx-gradle-plugin:1.0.3"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+sourceSets {
+    main {
+        resources {
+            srcDir rootProject.file("config/dev")
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    //Gradle Plugins
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+    maven { url "https://plugins.gradle.org/m2/" }
+}
+
+dependencies {
+    implementation("com.google.guava:guava:$guava_version")
+    implementation(platform("io.vertx:vertx-stack-depchain:$vertx_version"))
+    implementation("io.vertx:vertx-config")
+    implementation("io.vertx:vertx-web")
+    implementation("io.vertx:vertx-web-openapi")
+    implementation("io.vertx:vertx-json-schema")
+    implementation("io.vertx:vertx-web-api-contract")
+    implementation("io.vertx:vertx-redis-client")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
+    implementation("org.apache.logging.log4j:log4j-api:$log4j_version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j_version")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version")
+    implementation("org.slf4j:slf4j-api:1.7.34")
+    testImplementation("io.vertx:vertx-junit5")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junit_jupiter_version")
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "${main_class_name}"
+        attributes 'Main-Verticle': "${main_class_name}"
+        attributes 'Main-Command': 'run'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}

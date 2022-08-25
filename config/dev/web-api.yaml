@@ -1,0 +1,184 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Corda API
+servers:
+  - url: http://localhost:9096
+paths:
+  /api/terms/issue:
+    post:
+      summary: Create Bond Term
+      operationId: issue-bond-terms
+      tags:
+        - corda
+        - bond-term
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/termRequest'
+      responses:
+        '200':
+          description: Response for create Term
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+  /api/terms/{bondName}:
+    get:
+      summary: Get bonds with bondName
+      operationId: get-bond-terms
+      tags:
+        - corda
+        - bond-term
+      parameters:
+        - name: bondName
+          in: path
+          required: true
+          description: BondId to retrieve from bonds
+          schema:
+            type: string
+      responses:
+        '200':
+          description: BondTerms queried for
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/term'
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+  /api/users:
+    post:
+      summary: Create Users on the cache
+      operationId: create-users
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRequest'
+      responses:
+        '200':
+          description: Response for create Term
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+  /api/user/{userId}:
+    get:
+      summary: Return the Users
+      operationId: get-users
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: UserId to retrieve the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Retrieve the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        createdTime:
+          type: string
+    userRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+    termRequest:
+      type: object
+      properties:
+        bondName:
+          type: string
+        interestRate:
+          type: number
+        parValue:
+          type: number
+        unitsAvailable:
+          type: integer
+        maturityDate:
+          type: string
+        bondType:
+          type: string
+        currency:
+          type: string
+        creditRating:
+          type: string
+        paymentFrequencyInMonths:
+          type: integer
+    term:
+      type: object
+      properties:
+        bondName:
+          type: string
+        interestRate:
+          type: number
+        parValue:
+          type: number
+        unitsAvailable:
+          type: integer
+        maturityDate:
+          type: string
+        bondType:
+          type: string
+        currency:
+          type: string
+        creditRating:
+          type: string
+        paymentFrequencyInMonths:
+          type: integer
+    exceptionMessage:
+      type: object
+      properties:
+        msg:
+          type: string
