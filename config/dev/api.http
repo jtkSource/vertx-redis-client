@@ -60,6 +60,11 @@ Content-Type: application/json
   "paymentFrequencyInMonths": 12
 }
 
+###
+GET http://localhost:9096/api/bonds/assigned/simpsonh
+
+###
+GET http://localhost:9096/api/bonds/assigned/kuriakosej
 
 ###
 GET http://localhost:9096/api/terms/test01
@@ -79,6 +84,6 @@ Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
 
 {
-  "bondName": "test01",
-  "unitsAssigned": 12
+  "bondName": "test02",
+  "unitsAssigned": 40
 }

@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BondAssignment {
     private static final Logger log = LoggerFactory.getLogger(BondAssignment.class);
@@ -28,7 +31,7 @@ public class BondAssignment {
     @JsonIgnore
     private final String bondTermKey;
     @JsonIgnore
-    private final String userToBondAssignmentKey;
+    private final String userToBondAssignmentKey; //corda:bt:user:assign:bonds#%s
     @JsonIgnore
     private String bondToUserAssignmentKey; //"corda:bt:bond:assign:users#%s"
     @JsonIgnore
@@ -45,10 +48,17 @@ public class BondAssignment {
         this.nextCouponDate = nextCouponDate;
         this.maturityDate = maturityDate;
         this.bondTermKey = BondTerm.getRedisKey(bondName);
-        this.userToBondAssignmentKey = String.format("corda:bt:user:assign:bonds#%s", userId);
+        this.userToBondAssignmentKey = getUserToBondAssignmentKey(userId);
         this.cache = new Cache();
     }
 
+    public static String getUserToBondAssignmentKey(String userId) {
+        return String.format("corda:bt:user:assign:bonds#%s", userId);
+    }
+
+    public String getUserToBondAssignmentKey() {
+        return userToBondAssignmentKey;
+    }
 
     public String getBondName() {
         return bondName;
@@ -79,6 +89,23 @@ public class BondAssignment {
     }
 
     public class Cache {
+
+        public static Future<Set<String>> getBonds(String userName) {
+            Promise<Set<String>> promise = Promise.promise();
+            VRedisClient.getClient()
+                    .send(Request.cmd(Command.SMEMBERS, BondAssignment.getUserToBondAssignmentKey(userName)),
+                            event -> {
+                                if (event.succeeded()) {
+                                    Set<String> bonds = event.result().stream()
+                                            .map(response -> response.toString())
+                                            .collect(Collectors.toSet());
+                                    promise.complete(bonds);
+                                }else {
+                                    promise.fail(event.cause());
+                                }
+                            });
+            return promise.future();
+        }
 
         public Future<Boolean> assignBondsToUser() {
             Promise<Boolean> promise = Promise.promise();
@@ -144,11 +171,11 @@ public class BondAssignment {
                                                     event.result().toString());
                                         }
                                     })
-                                    .send(Request.cmd(Command.SADD, userToBondAssignmentKey, bondName), event -> {
+                                    .send(Request.cmd(Command.SADD, userToBondAssignmentKey, bondId), event -> {
                                         if (event.succeeded()) {
                                             log.info("CMD:[SADD {} {}] > {}",
                                                     userToBondAssignmentKey,
-                                                    bondName,
+                                                    bondId,
                                                     event.result().toString());
                                         }
                                     })

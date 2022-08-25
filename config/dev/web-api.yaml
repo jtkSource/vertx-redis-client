@@ -82,6 +82,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exceptionMessage'
+  /api/bonds/assigned/{userId}:
+    get:
+      summary: Get bonds assigned to UserId
+      operationId: get-user-bonds
+      tags:
+        - corda
+        - bond-term
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId to retrieve bonds
+          schema:
+            type: string
+      responses:
+        '200':
+          description: BondTerms queried for userId
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+
         # Users API
   /api/users:
     post:

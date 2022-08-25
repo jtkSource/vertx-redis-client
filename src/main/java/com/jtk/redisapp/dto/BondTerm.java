@@ -41,7 +41,10 @@ public class BondTerm {
         this.currency = term.getString("currency");
         this.creditRating = term.getString("creditRating");
         this.paymentFrequencyInMonths = term.getInteger("paymentFrequencyInMonths");
-        this.numberOfBonds = 0;
+        if(term.containsKey("numberOfBonds")){
+            this.numberOfBonds = term.getInteger("numberOfBonds");
+        }else
+            this.numberOfBonds = 0;
         cache = new Cache();
     }
 

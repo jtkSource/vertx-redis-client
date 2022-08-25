@@ -161,6 +161,27 @@ public class HandlerFactory {
                 });
 
         routerBuilder
+                .operation("get-user-bonds")
+                        .handler(routingContext -> {
+                            RequestParameters params = routingContext.get("parsedParameters");
+                            String userName = params.pathParameter("userId").getString();
+                            BondAssignment.Cache.getBonds(userName)
+                                    .onComplete(event -> {
+                                        if (event.succeeded()){
+                                            JsonArray array = new JsonArray(event.result().stream().toList());
+                                            handleResponse(routingContext, array.toString());
+                                        }else {
+                                            handleExceptionResponse(routingContext, event.cause());
+                                        }
+                                    });
+                        });
+
+        buildUserManagementAPI(routerBuilder);
+
+    }
+
+    private static void buildUserManagementAPI(RouterBuilder routerBuilder) {
+        routerBuilder
                 .operation("create-users")
                 .handler(routingContext ->
                         hasRole(getUserFromHeader(routingContext), "UserAdmin")
@@ -251,7 +272,6 @@ public class HandlerFactory {
                                 }
                             });
                 });
-
     }
 
     private static Future<Boolean> hasRole(String userName, String role) {
