@@ -49,7 +49,7 @@ public class BondTerm {
     }
 
     public static String getRedisKey(String bondName) {
-        return String.format("corda:bt#%s", bondName);
+        return String.format(RedisKeys.BOND_TERM_KEY.getPattern(), bondName);
     }
 
     @JsonIgnore

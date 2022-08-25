@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,7 @@ public class BondAssignment {
     }
 
     public static String getUserToBondAssignmentKey(String userId) {
-        return String.format("corda:bt:user:assign:bonds#%s", userId);
+        return String.format(RedisKeys.USER_TO_BOND_ASSIGNMENT_KEY.getPattern(), userId);
     }
 
     public String getUserToBondAssignmentKey() {
@@ -138,8 +137,8 @@ public class BondAssignment {
                         if (rs.succeeded() && rs.result().getBoolean("validTransaction")) {
                             final Integer nextBondNo = rs.result().getInteger("numberOfBonds") + 1;
                             final String bondId = String.format("%s-%d", bondName, nextBondNo);
-                            bondToUserAssignmentKey = String.format("corda:bt:bond:assign:users#%s", bondId);
-                            bondsDetailsKey = String.format("corda:bt:bond:details#%s", bondId);
+                            bondToUserAssignmentKey = String.format(RedisKeys.BOND_TO_USER_ASSIGNMENT_KEY.getPattern(), bondId);
+                            bondsDetailsKey = String.format(RedisKeys.BOND_DETAILS_KEY.getPattern(), bondId);
                             conn.send(Request.cmd(Command.MULTI),
                                             event -> {
                                                 if (event.succeeded() && event.result().toString().equals("OK")) {

@@ -43,7 +43,7 @@ public class RUserRole {
     }
 
     public static String getRedisKey(String userName) {
-        return String.format("corda:users:roles#%s", userName);
+        return String.format(RedisKeys.USER_ROLES_ASSIGNMENT_KEY.getPattern(), userName);
     }
 
     @JsonIgnore

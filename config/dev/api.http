@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:9096/api/user/roles/simpsonh
+GET http://localhost:9096/api/user/roles/kuriakosej
 
 ###
 POST http://localhost:9096/api/terms/issue
