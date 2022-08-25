@@ -55,7 +55,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exceptionMessage'
-  # Users API
+  /api/bonds/assign:
+    post:
+      summary: Assign bonds to Traders
+      operationId: request-bond
+      tags:
+        - corda
+        - bond
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bondName:
+                  type: string
+                unitsAssigned:
+                  type: integer
+      responses:
+        '200':
+          description: Response assigning bonds to traders
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+        # Users API
   /api/users:
     post:
       summary: Create Users on the cache

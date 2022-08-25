@@ -21,7 +21,6 @@ public class RUser {
     private final String userName;
     private final String password;
     private final String name;
-    private final String role;
 
     private final Instant createdTime;
     @JsonIgnore
@@ -31,7 +30,6 @@ public class RUser {
         this.userName = users.getString("userName");
         this.password = users.getString("password");
         this.name = users.getString("name");
-        this.role = users.getString("role");
         this.createdTime = Instant.now();
         this.cache = new Cache();
     }
@@ -40,7 +38,6 @@ public class RUser {
         this.userName = users.getString("userName");
         this.password = users.getString("password");
         this.name = users.getString("name");
-        this.role = users.getString("role");
         this.createdTime = createdTime;
         this.cache = new Cache();
     }
@@ -64,10 +61,6 @@ public class RUser {
 
     public String getName() {
         return name;
-    }
-
-    public String getRole() {
-        return role;
     }
 
     public Instant getCreatedTime() {
@@ -137,7 +130,6 @@ public class RUser {
                             key,
                             "name", getName(),
                             "password", getPassword(),
-                            "role", getRole(),
                             "createdTime", String.valueOf(getCreatedTime().toEpochMilli())
                             // everything in redis is a string.
                             // so store time in epoch for querying ability

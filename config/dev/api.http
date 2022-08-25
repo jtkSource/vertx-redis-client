@@ -13,10 +13,9 @@ Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
 
 {
-  "userName": "testDummy",
+  "userName": "simpsonh",
   "password": "@#$@#%",
-  "name": "dummy",
-  "role": "PLA"
+  "name": "homer"
 }
 
 ###
@@ -29,6 +28,9 @@ GET http://localhost:9096/api/user/astala
 GET http://localhost:9096/api/user/simpsonh
 
 ###
+GET http://localhost:9096/api/user/Ben
+
+###
 POST http://localhost:9096/api/user/roles
 Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
@@ -39,7 +41,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:9096/api/user/roles/kuriakosej
+GET http://localhost:9096/api/user/roles/simpsonh
 
 ###
 POST http://localhost:9096/api/terms/issue
@@ -47,14 +49,14 @@ Authorization: Basic astala dummypasswd
 Content-Type: application/json
 
 {
-  "bondName": "test11",
+  "bondName": "test04",
   "bondType": "CB",
-  "creditRating": "B-",
-  "currency": "USD",
-  "interestRate": 5.4,
-  "maturityDate": "20300824",
-  "parValue": 500,
-  "unitsAvailable": 10,
+  "creditRating": "BB-",
+  "currency": "SGD",
+  "interestRate": 0.4,
+  "maturityDate": "20290824",
+  "parValue": 1000,
+  "unitsAvailable": 4000,
   "paymentFrequencyInMonths": 12
 }
 
@@ -68,3 +70,15 @@ GET http://localhost:9096/api/terms/test02
 ###
 GET http://localhost:9096/api/terms/test03
 
+###
+GET http://localhost:9096/api/terms/test04
+
+###
+POST http://localhost:9096/api/bonds/assign
+Authorization: Basic kuriakosej dummypasswd
+Content-Type: application/json
+
+{
+  "bondName": "test01",
+  "unitsAssigned": 12
+}

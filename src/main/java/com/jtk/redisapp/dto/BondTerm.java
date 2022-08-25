@@ -26,6 +26,8 @@ public class BondTerm {
     private final String currency;
     private final String creditRating;
     private final Integer paymentFrequencyInMonths;
+
+    private final Integer numberOfBonds;
     @JsonIgnore
     private final Cache cache;
 
@@ -34,15 +36,16 @@ public class BondTerm {
         this.interestRate = term.getDouble("interestRate");
         this.parValue = term.getInteger("parValue");
         this.unitsAvailable = term.getInteger("unitsAvailable");
-        this.maturityDate =  term.getString("maturityDate");
+        this.maturityDate = term.getString("maturityDate");
         this.bondType = term.getString("bondType");
         this.currency = term.getString("currency");
         this.creditRating = term.getString("creditRating");
         this.paymentFrequencyInMonths = term.getInteger("paymentFrequencyInMonths");
+        this.numberOfBonds = 0;
         cache = new Cache();
     }
 
-    public static String getRedisKey(String bondName){
+    public static String getRedisKey(String bondName) {
         return String.format("corda:bt#%s", bondName);
     }
 
@@ -88,6 +91,10 @@ public class BondTerm {
         return paymentFrequencyInMonths;
     }
 
+    public Integer getNumberOfBonds() {
+        return numberOfBonds;
+    }
+
     public Cache getCache() {
         return cache;
     }
@@ -107,66 +114,69 @@ public class BondTerm {
 
     public class Cache {
 
-        public static Future<BondTerm> getBondTerm(String bondName){
+        public static Future<BondTerm> getBondTerm(String bondName) {
             Promise<BondTerm> bondTermPromise = Promise.promise();
             String bondKey = BondTerm.getRedisKey(bondName);
             log.info("Fetching bondTerm: {} from cache", bondKey);
-            try{
+            try {
                 VRedisClient.getClient()
                         .send(Request.cmd(Command.HGETALL, bondKey), event -> {
-                           if(event.succeeded() && event.result().size() > 0){
-                               log.info("Found bond term:{} in cache", bondKey);
-                               Response result = event.result();
-                               Set<String> keys = result.getKeys();
-                               JsonObject bondTermJson = new JsonObject();
-                               for (String key : keys) {
-                                   if(Set.of("interestRate").contains(key)){
-                                       bondTermJson.put(key, Double.valueOf(result.get(key).toString()));
-                                   }else if(Set.of("parValue","unitsAvailable","paymentFrequencyInMonths").contains(key)){
-                                       bondTermJson.put(key, Integer.valueOf(result.get(key).toString()));
-                                   }else {
-                                       bondTermJson.put(key, result.get(key).toString());
-                                   }
-                               }
-                               bondTermJson.put("bondName", bondName);
-                               BondTerm bt = new BondTerm(bondTermJson);
-                               bondTermPromise.complete(bt);
-                           }else {
-                               log.error("Unexpected Exception", event.cause());
-                               bondTermPromise.fail(event.cause());
-                           }
+                            if (event.succeeded() && event.result().size() > 0) {
+                                log.info("Found bond term:{} in cache", bondKey);
+                                Response result = event.result();
+                                Set<String> keys = result.getKeys();
+                                JsonObject bondTermJson = new JsonObject();
+                                for (String key : keys) {
+                                    if (Set.of("interestRate").contains(key)) {
+                                        bondTermJson.put(key, Double.valueOf(result.get(key).toString()));
+                                    } else if (Set.of("parValue", "unitsAvailable", "paymentFrequencyInMonths","numberOfBonds").contains(key)) {
+                                        bondTermJson.put(key, Integer.valueOf(result.get(key).toString()));
+                                    } else {
+                                        bondTermJson.put(key, result.get(key).toString());
+                                    }
+                                }
+                                bondTermJson.put("bondName", bondName);
+                                BondTerm bt = new BondTerm(bondTermJson);
+                                bondTermPromise.complete(bt);
+                            } else {
+                                log.error("Unexpected Exception", event.cause());
+                                bondTermPromise.fail(event.cause());
+                            }
                         });
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("Unable to fetch bondTerms", e);
                 bondTermPromise.fail(e);
             }
             return bondTermPromise.future();
 
         }
-        public Future<BondTerm> createTerm(){
+
+        public Future<BondTerm> createTerm() {
             Promise<BondTerm> bondTermPromise = Promise.promise();
             String bondTermKey = BondTerm.getRedisKey(bondName);
             log.info("Caching BondTerm {} ", bondTermKey);
-            try{
+            try {
                 VRedisClient.getClient()
                         .send(Request.cmd(
-                                Command.HSET,
-                                bondTermKey,
-                                "interestRate", interestRate.toString(),
-                                "parValue", parValue.toString(),
-                                "unitsAvailable",unitsAvailable.toString(),
-                                "maturityDate", maturityDate,
-                                "bondType",bondType,
-                                "currency", currency,
-                                "creditRating",creditRating,
-                                "paymentFrequencyInMonths",paymentFrequencyInMonths.toString()), event -> {
-                            if(event.succeeded()){
-                                bondTermPromise.complete(BondTerm.this);
-                            }else {
-                                bondTermPromise.fail(event.cause());
-                            }
-                        });
-            }catch (Exception e){
+                                        Command.HSET,
+                                        bondTermKey,
+                                        "interestRate", interestRate.toString(),
+                                        "parValue", parValue.toString(),
+                                        "unitsAvailable", unitsAvailable.toString(),
+                                        "maturityDate", maturityDate,
+                                        "bondType", bondType,
+                                        "currency", currency,
+                                        "creditRating", creditRating,
+                                        "paymentFrequencyInMonths", paymentFrequencyInMonths.toString(),
+                                        "numberOfBonds", numberOfBonds.toString()),
+                                event -> {
+                                    if (event.succeeded()) {
+                                        bondTermPromise.complete(BondTerm.this);
+                                    } else {
+                                        bondTermPromise.fail(event.cause());
+                                    }
+                                });
+            } catch (Exception e) {
                 log.error("Unable to cache bondTerms", e);
                 bondTermPromise.fail(e);
             }
