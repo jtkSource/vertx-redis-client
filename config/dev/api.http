@@ -1,18 +1,26 @@
+# Roles - for write operation
+# kuriakosej
+ # UserAdmin - can create users and assign roles
+ # Trader - can assigned Bonds
+# astala
+ # CompanyAdmin - can create Terms
+# simpsonh
+ # Trader - can request Bonds assignment
+
 ###
 POST http://localhost:9096/api/users
+Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
 
 {
-  "userName": "simpsonh",
+  "userName": "testDummy",
   "password": "@#$@#%",
-  "name": "Homer",
-  "role": "QA"
+  "name": "dummy",
+  "role": "PLA"
 }
 
 ###
 GET http://localhost:9096/api/user/kuriakosej
-
-<> 2022-08-25T100350.200.json
 
 ###
 GET http://localhost:9096/api/user/astala
@@ -20,56 +28,36 @@ GET http://localhost:9096/api/user/astala
 ###
 GET http://localhost:9096/api/user/simpsonh
 
-<> 2022-08-25T100354.200.json
-
 ###
-POST http://localhost:9096/api/terms/issue
+POST http://localhost:9096/api/user/roles
+Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
 
 {
-  "bondName": "test01",
-  "bondType": "GB",
-  "creditRating": "AAA",
-  "currency": "USD",
-  "interestRate": 2.4,
-  "maturityDate": "20230824",
-  "parValue": 500,
-  "unitsAvailable": 1000,
-  "paymentFrequencyInMonths": 12
+  "userId": "simpsonh",
+  "role": "Trader"
 }
 
 ###
+GET http://localhost:9096/api/user/roles/kuriakosej
+
+###
 POST http://localhost:9096/api/terms/issue
+Authorization: Basic astala dummypasswd
 Content-Type: application/json
 
 {
-  "bondName": "test02",
-  "bondType": "GB",
+  "bondName": "test11",
+  "bondType": "CB",
   "creditRating": "B-",
   "currency": "USD",
   "interestRate": 5.4,
-  "maturityDate": "20240824",
-  "parValue": 600,
-  "unitsAvailable": 1000,
-  "paymentFrequencyInMonths": 12
-}
-
-<> 2022-08-25T100145.200.json
-###
-POST http://localhost:9096/api/terms/issue
-Content-Type: application/json
-
-{
-  "bondName": "test03",
-  "bondType": "GB",
-  "creditRating": "AAA",
-  "currency": "SGD",
-  "interestRate": 2.4,
-  "maturityDate": "20230824",
+  "maturityDate": "20300824",
   "parValue": 500,
-  "unitsAvailable": 1000,
+  "unitsAvailable": 10,
   "paymentFrequencyInMonths": 12
 }
+
 
 ###
 GET http://localhost:9096/api/terms/test01

@@ -159,8 +159,13 @@ public class BondTerm {
                                 "bondType",bondType,
                                 "currency", currency,
                                 "creditRating",creditRating,
-                                "paymentFrequencyInMonths",paymentFrequencyInMonths.toString()));
-                bondTermPromise.complete(BondTerm.this);
+                                "paymentFrequencyInMonths",paymentFrequencyInMonths.toString()), event -> {
+                            if(event.succeeded()){
+                                bondTermPromise.complete(BondTerm.this);
+                            }else {
+                                bondTermPromise.fail(event.cause());
+                            }
+                        });
             }catch (Exception e){
                 log.error("Unable to cache bondTerms", e);
                 bondTermPromise.fail(e);

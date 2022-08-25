@@ -108,6 +108,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exceptionMessage'
+  /api/user/roles:
+    post:
+      summary: Assign role to userIs
+      operationId: assign-user-role
+      tags:
+        - users
+        - roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                role:
+                  type: string
+      responses:
+        '200':
+          description: Response for assigning roles to users
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+
+  /api/user/roles/{userId}:
+    get:
+      summary: Get all roles for the user
+      operationId: get-user-role
+      tags:
+        - users
+        - roles
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: UserId to retrieve the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Retrieve the list of roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
 
 components:
   schemas:
