@@ -7,7 +7,18 @@
 # simpsonh
  # Trader - can request Bonds assignment
 
-###
+### Create Admin User using Super User G_D
+POST http://localhost:9096/api/users
+Authorization: Basic G_D dummypasswd
+Content-Type: application/json
+
+{
+  "userName": "kuriakosej",
+  "password": "@#$@#%",
+  "name": "Jubin"
+}
+
+### Create other users using UserAdmin
 POST http://localhost:9096/api/users
 Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
@@ -15,22 +26,23 @@ Content-Type: application/json
 {
   "userName": "simpsonh",
   "password": "@#$@#%",
-  "name": "homer"
+  "name": "Homer"
 }
 
-###
+### GET user G_D
+GET http://localhost:9096/api/user/G_D
+
+### GET user kuriakosej
 GET http://localhost:9096/api/user/kuriakosej
 
-###
+### GET user astala
 GET http://localhost:9096/api/user/astala
 
-###
+### GET user simpsonh
 GET http://localhost:9096/api/user/simpsonh
 
-###
-GET http://localhost:9096/api/user/Ben
 
-###
+### Assign Role with UserAdmin Role
 POST http://localhost:9096/api/user/roles
 Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
@@ -40,62 +52,68 @@ Content-Type: application/json
   "role": "Trader"
 }
 
-###
-GET http://localhost:9096/api/user/roles/kuriakosej
+### GET User Roles
+GET http://localhost:9096/api/user/roles/simpsonh
 
-###
+### Create Bond Terms by CompanyAdmin
 POST http://localhost:9096/api/terms/issue
 Authorization: Basic astala dummypasswd
 Content-Type: application/json
 
 {
   "bondName": "test04",
-  "bondType": "CB",
-  "creditRating": "BB-",
-  "currency": "SGD",
-  "interestRate": 0.4,
-  "maturityDate": "20290824",
+  "bondType": "GB",
+  "creditRating": "C",
+  "currency": "USD",
+  "interestRate": 12.4,
+  "maturityDate": "20540824",
   "parValue": 1000,
-  "unitsAvailable": 4000,
+  "unitsAvailable": 2430,
   "paymentFrequencyInMonths": 12
 }
 
-###
-GET http://localhost:9096/api/bonds/assigned/simpsonh
-
-###
-GET http://localhost:9096/api/bonds/assigned/kuriakosej
-
-###
-GET http://localhost:9096/api/bonds/details/test02-4
-
-###
-GET http://localhost:9096/api/bonds/details/test02-3
-
-###
+### GET Term 01
 GET http://localhost:9096/api/terms/test01
 
-###
+### GET Term 02
 GET http://localhost:9096/api/terms/test02
 
-###
+### GET Term 03
 GET http://localhost:9096/api/terms/test03
 
-###
+### GET Term 04
 GET http://localhost:9096/api/terms/test04
 
-###
+
+### Assign Trader (Authorization header) a Bond
 POST http://localhost:9096/api/bonds/assign
 Authorization: Basic kuriakosej dummypasswd
 Content-Type: application/json
 
 {
-  "bondName": "test02",
-  "unitsAssigned": 40
+  "bondName": "test03",
+  "unitsAssigned": 50
 }
 
 
-###
+
+### Get Bonds Assigned to simpsonh
+GET http://localhost:9096/api/bonds/assigned/simpsonh
+
+### Get Bonds Assigned to kuriakosej
+GET http://localhost:9096/api/bonds/assigned/kuriakosej
+
+### Get Bond Details for test01-1
+GET http://localhost:9096/api/bonds/details/test01-1
+
+### Get Bond Details for test02-2
+GET http://localhost:9096/api/bonds/details/test02-2
+
+### Get All Bond Details
+GET http://localhost:9096/api/bonds/details/all
+
+
+### Get All Keys registered
 GET http://localhost:9096/api/keys
 Content-Type: application/json
 
@@ -103,7 +121,7 @@ Content-Type: application/json
   "pattern": "*"
 }
 
-###
+### Get Keys by pattern
 GET http://localhost:9096/api/keys
 Content-Type: application/json
 
@@ -111,7 +129,7 @@ Content-Type: application/json
   "pattern": "corda:bt:bond:details#*"
 }
 
-###
+### Get Keys by pattern
 GET http://localhost:9096/api/keys
 Content-Type: application/json
 

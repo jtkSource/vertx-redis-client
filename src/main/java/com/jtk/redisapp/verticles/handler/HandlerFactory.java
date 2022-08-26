@@ -212,19 +212,46 @@ public class HandlerFactory {
                 .handler(routingContext -> {
                     RequestParameters params = routingContext.get("parsedParameters");
                     String bondId = params.pathParameter("bondId").getString();
-                    BondDetails.Cache.getBondsDetails(bondId)
-                            .onComplete(event -> {
-                                if (event.succeeded()){
-                                    BondDetails details = event.result();
-                                    try {
-                                        handleResponse(routingContext, jsonMapper.writeValueAsString(details));
-                                    } catch (JsonProcessingException e) {
-                                        handleExceptionResponse(routingContext, e);
+                    JsonArray arrayOfBondDetails = new JsonArray();
+                    if(bondId.equalsIgnoreCase("all")){
+                        BondDetails.Cache.getAllBondDetails()
+                                .onComplete(event -> {
+                                    if(event.succeeded()){
+                                        List<BondDetails> listOfBonds = event.result();
+                                        boolean exception = false;
+                                        for (int i = 0; i < listOfBonds.size(); i++) {
+                                            try {
+                                                arrayOfBondDetails.add(new JsonObject(jsonMapper.writeValueAsString(listOfBonds.get(i))));
+                                            } catch (JsonProcessingException e) {
+                                                log.error("Unable to parse json", e);
+                                                handleExceptionResponse(routingContext, e);
+                                                exception = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!exception){
+                                            handleResponse(routingContext,arrayOfBondDetails.toString());
+                                        }
+                                    }else {
+                                        handleExceptionResponse(routingContext, event.cause());
                                     }
-                                }else {
-                                    handleExceptionResponse(routingContext, event.cause());
-                                }
-                            });
+                                });
+                    }else {
+                        BondDetails.Cache.getBondsDetails(bondId)
+                                .onComplete(event -> {
+                                    if (event.succeeded()) {
+                                        BondDetails details = event.result();
+                                        try {
+                                            arrayOfBondDetails.add(new JsonObject(jsonMapper.writeValueAsString(details)));
+                                            handleResponse(routingContext, arrayOfBondDetails.toString());
+                                        } catch (JsonProcessingException e) {
+                                            handleExceptionResponse(routingContext, e);
+                                        }
+                                    } else {
+                                        handleExceptionResponse(routingContext, event.cause());
+                                    }
+                                });
+                    }
                 });
     }
 

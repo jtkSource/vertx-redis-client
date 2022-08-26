@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.jtk.redisapp.dto.RedisKeys.LIST_BOND_KEYS;
+
 public class BondAssignment {
     private static final Logger log = LoggerFactory.getLogger(BondAssignment.class);
 
@@ -99,7 +101,7 @@ public class BondAssignment {
                                             .map(response -> response.toString())
                                             .collect(Collectors.toSet());
                                     promise.complete(bonds);
-                                }else {
+                                } else {
                                     promise.fail(event.cause());
                                 }
                             });
@@ -181,13 +183,23 @@ public class BondAssignment {
                                     .send(Request.cmd(Command.HSET, bondsDetailsKey,
                                                     "unitsAssigned", unitsAssigned,
                                                     "nextCouponDate", String.valueOf(nextCouponDate.toEpochDay()),
-                                                    "maturityDate", String.valueOf(LocalDate.parse(maturityDate, bondDateFormatter).toEpochDay())),
+                                                    "maturityDate", String.valueOf(LocalDate.parse(maturityDate, bondDateFormatter).toEpochDay()),
+                                                    "userId",userId),
                                             event -> {
-                                                log.info("CMD:[HSET {} {} {} {} {} {} {} ] > {}",
+                                                log.info("CMD:[HSET {} {} {} {} {} {} {} {} {} ] > {}",
                                                         bondsDetailsKey,
                                                         "unitsAssigned", unitsAssigned,
                                                         "nextCouponDate", nextCouponDate.toEpochDay(),
                                                         "maturityDate", LocalDate.parse(maturityDate, bondDateFormatter).toEpochDay(),
+                                                        "userId",userId,
+                                                        event.result().toString());
+                                            })
+                                    .send(Request.cmd(Command.ZADD, LIST_BOND_KEYS.getPattern(), nextBondNo, bondId),
+                                            event -> {
+                                                log.info("CMD:[ZADD {} {} {} ] > {}",
+                                                        LIST_BOND_KEYS.getPattern(),
+                                                        nextBondNo,
+                                                        bondId,
                                                         event.result().toString());
                                             })
                                     .send(Request.cmd(Command.EXEC), event -> {

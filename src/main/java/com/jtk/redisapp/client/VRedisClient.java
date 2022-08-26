@@ -1,8 +1,6 @@
 package com.jtk.redisapp.client;
 
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetClientOptions;
 import io.vertx.redis.client.Command;
@@ -33,7 +31,7 @@ public class VRedisClient {
     private static final AtomicBoolean CONNECTING = new AtomicBoolean();
     private static Vertx vertx;
 
-    public static void init(Vertx vertx, JsonObject config){
+    public static Future<RedisConnection> init(Vertx vertx, JsonObject config){
         VRedisClient.vertx = vertx;
         String host = config.getString("redis.host");
         String masterName = config.getString("redis.master.name");
@@ -57,12 +55,9 @@ public class VRedisClient {
                 .setMaxPoolSize(maxPool)
                 .setMaxPoolWaiting(maxPoolWaiting);
         log.info("Redis Options {}", redisOptions.toJson());
-        createRedisClient()
-                .onComplete(event -> {
-                    if(event.failed()){
-                        attemptReconnect(1);
-                    }
-                });
+
+        return createRedisClient()
+                .onComplete(new RedisClientHandler(1));
     }
 
     private static void attemptReconnect(int retry) {
@@ -76,7 +71,7 @@ public class VRedisClient {
             long backoff = (long) (Math.pow(2, Math.min(retry, 10)) * 10);
             vertx.setTimer(backoff, timer ->
                     createRedisClient()
-                            .onFailure(t -> attemptReconnect(retry + 1)));
+                            .onComplete(new RedisClientHandler(retry + 1)));
         }
     }
 
@@ -101,7 +96,7 @@ public class VRedisClient {
                         promise.complete(conn);
                         CONNECTING.set(false);
                         client =  conn;
-                        log.info("redis successfully connected...");
+
                     }).onFailure(t -> {
                         promise.fail(t);
                         CONNECTING.set(false);
@@ -117,14 +112,26 @@ public class VRedisClient {
             client.send(Request.cmd(Command.PING));
         }catch (Exception e){
             createRedisClient()
-                    .onComplete(event -> {
-                        if(event.failed()){
-                            attemptReconnect(1);
-                        }
-                    });
+                    .onComplete(new RedisClientHandler(1));
+        }
+        return client;
+    }
+
+    static class RedisClientHandler implements Handler<AsyncResult<RedisConnection>> {
+        private int retry;
+
+        public RedisClientHandler(int retry) {
+            this.retry = retry;
         }
 
-        return client;
+        @Override
+        public void handle(AsyncResult<RedisConnection> event) {
+            if(event.failed()){
+                attemptReconnect(retry);
+            }else {
+               log.info("Redis Connection Successful...");
+            }
+        }
     }
 
 }

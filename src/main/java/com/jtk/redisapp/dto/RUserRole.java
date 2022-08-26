@@ -63,8 +63,10 @@ public class RUserRole {
             VRedisClient.getClient()
                     .send(Request.cmd(Command.SADD, key, role), event -> {
                         if (event.succeeded()){
+                            log.info("Assigned Role:{} to user:{} ", role, userName);
                             promise.complete(RUserRole.this);
                         }else{
+                            log.info("Failed to Assigned Role:{} to user:{} ", role, userName);
                             promise.fail(event.cause());
                         }
                     });

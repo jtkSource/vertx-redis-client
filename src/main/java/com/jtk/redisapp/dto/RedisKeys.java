@@ -7,6 +7,8 @@ public enum RedisKeys {
 
     BOND_TERM_KEY("corda:bt#%s"), // bond terms
 
+    LIST_BOND_KEYS("corda:bt:bond:keys"), // used to join the bondId to other keys
+
     USERS_KEY("corda:users#%s"), // users
 
     USER_ROLES_ASSIGNMENT_KEY("corda:users:roles#%s"); // list of roles assgined to user

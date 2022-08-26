@@ -3,6 +3,8 @@ package com.jtk.redisapp.verticles;
 
 import com.google.common.collect.ImmutableList;
 import com.jtk.redisapp.client.VRedisClient;
+import com.jtk.redisapp.dto.RUser;
+import com.jtk.redisapp.dto.RUserRole;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -57,7 +59,7 @@ public class MainVerticle extends AbstractVerticle {
                             if(result.succeeded()) {
                                 log.info("Completed all verticles !!! ");
                                 log.info("deployments:[{}]", deploymentMap);
-
+                                createSuperUser();
                                 startPromise.complete();
                             }else {
                                 log.error("Error deploying Verticles...");
@@ -73,6 +75,28 @@ public class MainVerticle extends AbstractVerticle {
             }
         });
     }
+
+    private static void createSuperUser() {
+        /**
+         * creating the first admin user G_D
+         */
+        JsonObject users = new JsonObject().put("userName","G_D")
+                .put("password","@@#$%!!")
+                .put("name","IAMWHOIAM");
+        JsonObject role = new JsonObject()
+                .put("userId","G_D")
+                .put("role","UserAdmin");
+        try {
+            new RUser(users).getCache().createUser();
+            new RUserRole(role).getCache().assignRole();
+            log.info("Created User {} with Role {}",
+                    users.getString("userName"),
+                    role.getString("role"));
+        } catch (Exception e) {
+            log.error("Couldn't create G_D user", e);
+        }
+    }
+
     private ConfigRetriever getAppConfig() {
         //The Vert.x Config module allows an application to pull it's configuration from a number of different source,
         // either in isolation or in combination.
@@ -103,7 +127,8 @@ public class MainVerticle extends AbstractVerticle {
                     .join(deployAppVerticles(json))
                     .onComplete(result -> {
                         if (result.succeeded()) {
-                            log.info("Completed all verticles !!! \n deploymentId:{}", deploymentMap);
+                            log.info("Completed all verticles !!!");
+                            log.info("Verticle deploymentId:{}", deploymentMap);
                         }else {
                             log.error("Error deploying verticles ", result.cause());
                         }

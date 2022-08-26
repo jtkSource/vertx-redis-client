@@ -133,7 +133,13 @@ public class RUser {
                             "createdTime", String.valueOf(getCreatedTime().toEpochMilli())
                             // everything in redis is a string.
                             // so store time in epoch for querying ability
-                    ));
+                    ), event -> {
+                        if(event.succeeded()){
+                            log.info("Created user:{} ", userName);
+                        }else {
+                            log.info("Failed to create user:{} ", userName);
+                        }
+                    });
         }
     }
 }

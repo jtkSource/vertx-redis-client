@@ -133,14 +133,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  unitsAssigned:
-                    type: integer
-                  nextCouponDate:
-                    type: string
-                  maturityDate:
-                    type: string
+                type: array
+                items:
+                  $ref: "#/components/schemas/bond-details"
         '500':
           description: The request has been accepted for processing, but the processing has not been completed
           content:
@@ -358,6 +353,19 @@ components:
           type: string
         paymentFrequencyInMonths:
           type: integer
+    bond-details:
+      type: object
+      properties:
+        bondId:
+          type: string
+        userId:
+          type: string
+        unitsAssigned:
+          type: integer
+        nextCouponDate:
+          type: string
+        maturityDate:
+          type: string
     exceptionMessage:
       type: object
       properties:
