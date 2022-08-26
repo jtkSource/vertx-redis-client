@@ -68,6 +68,7 @@ GET http://localhost:9096/api/bonds/assigned/kuriakosej
 
 ###
 GET http://localhost:9096/api/bonds/details/test02-4
+
 ###
 GET http://localhost:9096/api/bonds/details/test02-3
 
@@ -91,4 +92,29 @@ Content-Type: application/json
 {
   "bondName": "test02",
   "unitsAssigned": 40
+}
+
+
+###
+GET http://localhost:9096/api/keys
+Content-Type: application/json
+
+{
+  "pattern": "*"
+}
+
+###
+GET http://localhost:9096/api/keys
+Content-Type: application/json
+
+{
+  "pattern": "corda:bt:bond:details#*"
+}
+
+###
+GET http://localhost:9096/api/keys
+Content-Type: application/json
+
+{
+"pattern": "corda:users#*"
 }

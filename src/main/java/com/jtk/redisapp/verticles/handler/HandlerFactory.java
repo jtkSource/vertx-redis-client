@@ -22,9 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 
 public class HandlerFactory {
     private static final Logger log = LoggerFactory.getLogger(HandlerFactory.class);
@@ -35,6 +33,43 @@ public class HandlerFactory {
     }
 
     public static void buildRoutes(Vertx vertx, RouterBuilder routerBuilder) {
+
+
+        buildBondAPI(routerBuilder);
+        buildUserManagementAPI(routerBuilder);
+
+        routerBuilder
+                .operation("get-keys")
+                .handler(routingContext -> {
+                    RequestParameters params = routingContext.get("parsedParameters");
+                    JsonObject patternJson = params.body().getJsonObject();
+                    Promise<List<String>> promise = Promise.promise();
+                    VRedisClient.getClient()
+                            .send(Request.cmd(Command.KEYS, patternJson.getString("pattern")),event -> {
+                                if(event.succeeded()){
+                                    List<String> keys = new ArrayList<>();
+                                    event.result().stream()
+                                            .forEach(response -> keys.add(response.toString()));
+                                    promise.complete(keys);
+                                }else {
+                                    promise.fail(event.cause());
+                                }
+                            });
+                    promise.future()
+                            .onComplete(event -> {
+                               if(event.succeeded()){
+                                   JsonArray keyArray = new JsonArray();
+                                   event.result().forEach(keyArray::add);
+                                   handleResponse(routingContext, keyArray.toString());
+                               }else {
+                                   handleExceptionResponse(routingContext, event.cause());
+                               }
+                            });
+                });
+
+    }
+
+    private static void buildBondAPI(RouterBuilder routerBuilder) {
         routerBuilder
                 .operation("issue-bond-terms")
                 .handler(routingContext -> {
@@ -191,10 +226,6 @@ public class HandlerFactory {
                                 }
                             });
                 });
-
-
-        buildUserManagementAPI(routerBuilder);
-
     }
 
     private static void buildUserManagementAPI(RouterBuilder routerBuilder) {

@@ -260,6 +260,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/exceptionMessage'
 
+  # Misc.
+  /api/keys:
+    get:
+      summary: Get redis keys by pattern
+      operationId: get-keys
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pattern:
+                  type: string
+      responses:
+        '200':
+          description: BondTerms queried for userId
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: The request has been accepted for processing, but the processing has not been completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exceptionMessage'
+
 components:
   schemas:
     user:
