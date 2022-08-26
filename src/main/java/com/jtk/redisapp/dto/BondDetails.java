@@ -2,13 +2,10 @@ package com.jtk.redisapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jtk.redisapp.client.VRedisClient;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
 import io.vertx.redis.client.Command;
 import io.vertx.redis.client.Request;
-import io.vertx.redis.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
